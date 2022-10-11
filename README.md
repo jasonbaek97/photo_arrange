@@ -1,5 +1,10 @@
 Jason Nas Photo file Arrage
 
+개발 목적
+ - NAS 폴더에 너무 두서없이 모아놓은 이미지들 일괄 정리 목적
+ - 로컬에서도 동일하게 작동 함
+ - ubuntu, windows 
+
 분류 방법
 1. 작업 디렉토리의 Photo 파일들을 연/월 순으로 정리
 2. Image 정보를 기준 으로 생성(촬열) 날짜별로 폴더 구성
