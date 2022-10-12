@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 img_ext = ['.jpg','.jpeg','.JPG','.png','.bmp']     # 이미지 확장지
-video_ext = ['.mp4','.avi','.mts','.m2ts','.MTS']   # 비디디 확장자
+video_ext = ['.mp4','.avi','.mts','.m2ts','.MTS']   # 비디오 확장자
 DEBUG = False
 img_list = []
 video_list = []
@@ -38,8 +38,12 @@ def getImageDate(image,DEBUG=False):
             data = img_info.get(tag_id)
             if tag == 'DateTime':                   # 촬영일 존재하면 년,월 세팅
                 data = data.replace('-',':')         # '-' 일자 구분자를 :로 변환
-                data = data.split()[0]              # data = 년:월:일
+                # meta정보 고려해서 10자리 끊고 -> 빈칸 0 trim후 0 채워넣기
+                data = data[:11]                    # yyyy:mm:dd 10자리만 읽기
+                data = data.replace(' ','0')        # 공백 '0' 채움
+                # data = data.split()[0]              # data = 년:월:일
                 date = data.split(':')  # date = [년, 월, 일]
+                if DEBUG: print(f'Data : {data}, Date : {date}')
                 try:
                     img_date.append(date[0])
                     img_date.append(date[1])
@@ -67,6 +71,8 @@ def getImageDate(image,DEBUG=False):
 
 def moveImageFiles(img_list, DEBUG=False):
     count =0
+    img_cnt = len(img_list)
+    print(f'Target file count : {img_cnt}')
     for img in img_list:
         img_date = getImageDate(img)
         if DEBUG : print(img_date[0], img_date[1], img)
@@ -82,7 +88,14 @@ def moveImageFiles(img_list, DEBUG=False):
         # 이미지 년\월 디렉토리 존재하면, 파일을 이동하고 없으면 생성 후 이동
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
+
+        # 해당 폴더에 동일파일 존재 시 이름 변경 (prefix : dup_ 추가)
+        if os.path.isfile(t_path) :
+            dup_name = 'dup_'+ img
+            t_path = os.path.join(dir_path, dup_name)
+
         shutil.move(s_path, t_path)
+        print(f'{img} ====> {t_path}')
         count = count+1
 
     print(f'{count} files moved!')
@@ -101,6 +114,9 @@ for file in os.listdir(cur_dir):
             etc_list.append(file)
     else:
         print(f'[{file}] is not File')
+print('========== report ===========')
+print(f'Working Directory : {cur_dir}')
+print(f'{len(img_list)} file(s) detected.')
 
 if DEBUG:
     print(f'img_list : {img_list}')
