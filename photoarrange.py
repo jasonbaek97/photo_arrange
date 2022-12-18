@@ -31,18 +31,18 @@ def getImageDate(image,DEBUG=False):
     if DEBUG : print(img.filename)
 
     # exif 정보로 이미지 촬영일 체크
-    img_info = img.getexif()
-    if img_info is not None:                        # exif 존재하면
-        for tag_id in img_info:                     # exif TAG 정보에서 촬영일 체크
+    img_info = img._getexif()
+    if img_info is not None:
+        for tag_id in img_info:                                 # exif TAG 정보에서 촬영일 체크
             tag = TAGS.get(tag_id, tag_id)
             data = img_info.get(tag_id)
-            if tag == 'DateTime':                   # 촬영일 존재하면 년,월 세팅
-                data = data.replace('-',':')         # '-' 일자 구분자를 :로 변환
+            if tag == 'DateTime' or tag == 'DateTimeOriginal':      # 촬영일 존재하면 년,월 세팅
+                data = data.replace('-',':')                        # '-' 일자 구분자를 :로 변환
+
                 # meta정보 고려해서 10자리 끊고 -> 빈칸 0 trim후 0 채워넣기
-                data = data[:11]                    # yyyy:mm:dd 10자리만 읽기
-                data = data.replace(' ','0')        # 공백 '0' 채움
-                # data = data.split()[0]              # data = 년:월:일
-                date = data.split(':')  # date = [년, 월, 일]
+                data = data[:11]                                    # yyyy:mm:dd 10자리만 읽기
+                data = data.replace(' ','0')                        # 공백 '0' 채움
+                date = data.split(':')                              # date = [년, 월, 일]
                 if DEBUG: print(f'Data : {data}, Date : {date}')
                 try:
                     img_date.append(date[0])
